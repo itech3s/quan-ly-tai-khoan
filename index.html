@@ -88,22 +88,8 @@
             display: none;
         }
 
-        .password-hint {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-size: 13px;
-            color: #1565c0;
-        }
-
-        .password-hint strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
             padding: 30px;
@@ -276,6 +262,27 @@
             background: #f8f9fa;
         }
 
+        .group-header {
+            background: #e8eaf6 !important;
+            font-weight: bold;
+            color: #3f51b5;
+            border-top: 3px solid #3f51b5;
+            border-bottom: 2px solid #3f51b5;
+        }
+
+        .group-header td {
+            padding: 15px 10px;
+            font-size: 15px;
+        }
+
+        .group-row {
+            background: #fafafa;
+        }
+
+        .group-row:hover {
+            background: #f0f0f0;
+        }
+
         .btn-delete {
             background: #e74c3c;
             color: white;
@@ -416,6 +423,16 @@
             justify-content: flex-end;
             margin-top: 20px;
         }
+
+        .account-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -491,6 +508,10 @@
                         <input type="text" id="username" required placeholder="Tên người dùng">
                     </div>
                     <div class="form-group">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="tel" id="phone" placeholder="0123456789" pattern="[0-9]{10,11}">
+                    </div>
+                    <div class="form-group">
                         <label for="amount">Số tiền (VNĐ) *</label>
                         <input type="number" id="amount" required placeholder="0" min="0" step="1000">
                     </div>
@@ -518,9 +539,9 @@
                         <th>Ngày tạo</th>
                         <th>Ngày hết hạn</th>
                         <th style="width: 120px;">Còn lại</th>
-                        <th>Tài khoản</th>
                         <th>User</th>
                         <th>Tên người dùng</th>
+                        <th>Số điện thoại</th>
                         <th style="width: 120px;">Số tiền</th>
                         <th>Ghi chú</th>
                         <th style="width: 120px;">Thao tác</th>
@@ -565,20 +586,17 @@
         let editingIndex = -1;
         let isLoggedIn = false;
 
-        // Khởi tạo dữ liệu credentials mặc định
         function initCredentials() {
             const savedCreds = localStorage.getItem('appCredentials');
             if (!savedCreds) {
-                // Mật khẩu mặc định: admin123
                 const defaultCreds = {
                     username: 'admin',
-                    password: btoa('admin123') // Base64 encode (bảo mật cơ bản)
+                    password: btoa('admin123')
                 };
                 localStorage.setItem('appCredentials', JSON.stringify(defaultCreds));
             }
         }
 
-        // Kiểm tra đăng nhập
         function checkLogin() {
             const sessionLogin = sessionStorage.getItem('isLoggedIn');
             if (sessionLogin === 'true') {
@@ -588,7 +606,6 @@
             }
         }
 
-        // Xử lý đăng nhập
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -606,20 +623,17 @@
             }
         });
 
-        // Hiển thị màn hình đăng nhập
         function showLoginScreen() {
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('mainApp').classList.remove('active');
         }
 
-        // Hiển thị ứng dụng chính
         function showMainApp() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').classList.add('active');
             initSampleData();
         }
 
-        // Đăng xuất
         function logout() {
             if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
                 sessionStorage.removeItem('isLoggedIn');
@@ -629,18 +643,15 @@
             }
         }
 
-        // Mở modal đổi mật khẩu
         function openChangePasswordModal() {
             document.getElementById('changePasswordModal').classList.add('active');
         }
 
-        // Đóng modal đổi mật khẩu
         function closeChangePasswordModal() {
             document.getElementById('changePasswordModal').classList.remove('active');
             document.getElementById('changePasswordForm').reset();
         }
 
-        // Xử lý đổi mật khẩu
         document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -650,25 +661,21 @@
             
             const savedCreds = JSON.parse(localStorage.getItem('appCredentials'));
             
-            // Kiểm tra mật khẩu hiện tại
             if (btoa(currentPassword) !== savedCreds.password) {
                 alert('❌ Mật khẩu hiện tại không đúng!');
                 return;
             }
             
-            // Kiểm tra mật khẩu mới khớp nhau
             if (newPassword !== confirmPassword) {
                 alert('❌ Mật khẩu mới và xác nhận không khớp!');
                 return;
             }
             
-            // Kiểm tra độ dài mật khẩu
             if (newPassword.length < 6) {
                 alert('❌ Mật khẩu mới phải có ít nhất 6 ký tự!');
                 return;
             }
             
-            // Cập nhật mật khẩu mới
             savedCreds.password = btoa(newPassword);
             localStorage.setItem('appCredentials', JSON.stringify(savedCreds));
             
@@ -676,7 +683,6 @@
             closeChangePasswordModal();
         });
 
-        // Khởi tạo dữ liệu mẫu
         function initSampleData() {
             const savedData = localStorage.getItem('accountsData');
             if (savedData) {
@@ -697,6 +703,7 @@
                     account: "vietly.com@gmail.com",
                     user: "bachuong1998@gmail.com",
                     username: "Chương",
+                    phone: "0123456789",
                     amount: 200000,
                     note: ""
                 },
@@ -707,6 +714,7 @@
                     account: "vietly.itech3s@gmail.com",
                     user: "minhtranduc3105@gmail.com",
                     username: "A Mạnh",
+                    phone: "0987654321",
                     amount: 150000,
                     note: ""
                 },
@@ -717,6 +725,7 @@
                     account: "vietly.itech3s@gmail.com",
                     user: "doanthangit2@gmail.com",
                     username: "Thắng IT SSC",
+                    phone: "0912345678",
                     amount: 150000,
                     note: ""
                 }
@@ -802,188 +811,14 @@
                 return;
             }
 
-            tbody.innerHTML = accounts.map((acc, index) => {
-                const daysRemaining = calculateDaysRemaining(acc.expireDate);
-                return `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${acc.service}</td>
-                    <td>${formatDate(acc.createDate)}</td>
-                    <td>${formatDate(acc.expireDate)}</td>
-                    <td>${formatDaysRemaining(daysRemaining)}</td>
-                    <td>${acc.account}</td>
-                    <td>${acc.user}</td>
-                    <td>${acc.username}</td>
-                    <td style="font-weight: bold; color: #27ae60;">${formatMoney(acc.amount)}</td>
-                    <td>${acc.note || ''}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-edit" onclick="editAccount(${index})">Sửa</button>
-                            <button class="btn-delete" onclick="deleteAccount(${index})">Xóa</button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-            }).join('');
-
-            updateStats();
-        }
-
-        function updateStats() {
-            document.getElementById('totalAccounts').textContent = accounts.length;
-            const uniqueServices = new Set(accounts.map(acc => acc.service));
-            document.getElementById('totalServices').textContent = uniqueServices.size;
-            
-            const totalAmount = accounts.reduce((sum, acc) => sum + (acc.amount || 0), 0);
-            document.getElementById('totalAmount').textContent = formatMoney(totalAmount);
-        }
-
-        document.getElementById('accountForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const createDate = document.getElementById('createDate').value.trim();
-            const expireDate = document.getElementById('expireDate').value.trim();
-
-            if (!validateDate(createDate)) {
-                alert('❌ Ngày tạo không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 01/10/2025)');
-                return;
-            }
-            if (!validateDate(expireDate)) {
-                alert('❌ Ngày hết hạn không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 31/10/2025)');
-                return;
-            }
-
-            const editIndex = parseInt(document.getElementById('editIndex').value);
-            const accountData = {
-                service: document.getElementById('service').value,
-                createDate: createDate,
-                expireDate: expireDate,
-                account: document.getElementById('account').value,
-                user: document.getElementById('user').value,
-                username: document.getElementById('username').value,
-                amount: parseInt(document.getElementById('amount').value) || 0,
-                note: document.getElementById('note').value
-            };
-
-            if (editIndex >= 0) {
-                accounts[editIndex] = accountData;
-                alert('✓ Đã cập nhật tài khoản thành công!');
-                editingIndex = -1;
-            } else {
-                accounts.push(accountData);
-                alert('✓ Đã thêm tài khoản thành công!');
-            }
-
-            saveData();
-            renderTable();
-            cancelEdit();
-        });
-
-        function editAccount(index) {
-            editingIndex = index;
-            const acc = accounts[index];
-            
-            document.getElementById('editIndex').value = index;
-            document.getElementById('service').value = acc.service;
-            document.getElementById('createDate').value = acc.createDate;
-            document.getElementById('expireDate').value = acc.expireDate;
-            document.getElementById('account').value = acc.account;
-            document.getElementById('user').value = acc.user;
-            document.getElementById('username').value = acc.username;
-            document.getElementById('amount').value = acc.amount || 0;
-            document.getElementById('note').value = acc.note;
-
-            document.getElementById('formTitle').textContent = '✏️ Chỉnh Sửa Thông Tin';
-            document.getElementById('submitBtn').textContent = '✓ Cập Nhật';
-            document.getElementById('submitBtn').className = 'btn-add';
-            
-            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function cancelEdit() {
-            editingIndex = -1;
-            document.getElementById('editIndex').value = '-1';
-            document.getElementById('accountForm').reset();
-            document.getElementById('formTitle').textContent = '➕ Thêm Thông Tin Mới';
-            document.getElementById('submitBtn').textContent = '✓ Thêm Tài Khoản';
-            
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
-        }
-
-        function clearForm() {
-            cancelEdit();
-        }
-
-        function deleteAccount(index) {
-            if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
-                accounts.splice(index, 1);
-                saveData();
-                renderTable();
-            }
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify(accounts, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            link.download = `tai-khoan-backup-${dd}-${mm}-${yyyy}.json`;
-            
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            alert('✓ Đã xuất dữ liệu thành công!');
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (Array.isArray(importedData)) {
-                        if (confirm('Bạn có muốn thay thế dữ liệu hiện tại bằng dữ liệu từ file?\n\n- Chọn OK: Thay thế hoàn toàn\n- Chọn Cancel: Giữ lại và không thay đổi')) {
-                            accounts = importedData;
-                            saveData();
-                            renderTable();
-                            alert('✓ Đã nhập dữ liệu thành công!');
-                        }
-                    } else {
-                        alert('❌ File không đúng định dạng!');
-                    }
-                } catch (error) {
-                    alert('❌ Lỗi khi đọc file: ' + error.message);
+            // Nhóm tài khoản theo account
+            const grouped = {};
+            accounts.forEach((acc, index) => {
+                if (!grouped[acc.account]) {
+                    grouped[acc.account] = [];
                 }
-            };
-            reader.readAsText(file);
-            
-            event.target.value = '';
-        }
+                grouped[acc.account].push({ ...acc, originalIndex: index });
+            });
 
-        window.onload = function() {
-            initCredentials();
-            checkLogin();
-            
-            const today = new Date();
-            const dd = String(today.getDate()).padStart(2, '0');
-            const mm = String(today.getMonth() + 1).padStart(2, '0');
-            const yyyy = today.getFullYear();
-            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
-        };
-    </script>
-</body>
-</html>
+            let html = '';
+            let stt = 1;
