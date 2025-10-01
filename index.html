@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Theo Dõi Thông Tin Tài Khoản</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-form button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .password-hint {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #1565c0;
+        }
+
+        .password-hint strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .change-password-btn {
+            background: #f39c12;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .change-password-btn:hover {
+            background: #e08e0b;
+            transform: translateY(-2px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 2px solid #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-clear {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #e08e0b;
+            transform: translateY(-2px);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .days-remaining {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .days-warning {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #ef5350;
+        }
+
+        .days-normal {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #66bb6a;
+        }
+
+        .days-expired {
+            background: #212121;
+            color: #ffffff;
+            border: 2px solid #424242;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <h1>🔐 ĐĂNG NHẬP HỆ THỐNG</h1>
+        <div class="error-message" id="loginError">Sai tên đăng nhập hoặc mật khẩu!</div>
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername">Tên đăng nhập</label>
+                <input type="text" id="loginUsername" required autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Mật khẩu</label>
+                <input type="password" id="loginPassword" required autocomplete="current-password">
+            </div>
+            <button type="submit">Đăng nhập</button>
+        </form>
+    </div>
+
+    <!-- Main App -->
+    <div class="container" id="mainApp">
+        <div class="header-bar">
+            <h1 style="margin: 0;">🔐 BẢNG THEO DÕI THÔNG TIN TÀI KHOẢN</h1>
+            <div>
+                <button class="change-password-btn" onclick="openChangePasswordModal()">🔑 Đổi mật khẩu</button>
+                <button class="logout-btn" onclick="logout()">🚪 Đăng xuất</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAccounts">0</div>
+                <div class="stat-label">Tổng số tài khoản</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalServices">0</div>
+                <div class="stat-label">Số dịch vụ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAmount">0đ</div>
+                <div class="stat-label">Tổng số tiền</div>
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 style="margin-bottom: 15px; color: #667eea;" id="formTitle">➕ Thêm Thông Tin Mới</h2>
+            <form id="accountForm">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="service">Dịch vụ *</label>
+                        <input type="text" id="service" required placeholder="Ví dụ: Chat GPT">
+                    </div>
+                    <div class="form-group">
+                        <label for="createDate">Ngày tạo (dd/mm/yyyy) *</label>
+                        <input type="text" id="createDate" required placeholder="01/10/2025" pattern="\d{2}/\d{2}/\d{4}">
+                    </div>
+                    <div class="form-group">
+                        <label for="expireDate">Ngày hết hạn (dd/mm/yyyy) *</label>
+                        <input type="text" id="expireDate" required placeholder="31/10/2025" pattern="\d{2}/\d{2}/\d{4}">
+                    </div>
+                    <div class="form-group">
+                        <label for="account">Tài khoản *</label>
+                        <input type="email" id="account" required placeholder="example@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="user">User *</label>
+                        <input type="email" id="user" required placeholder="user@gmail.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Tên người dùng *</label>
+                        <input type="text" id="username" required placeholder="Tên người dùng">
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Số tiền (VNĐ) *</label>
+                        <input type="number" id="amount" required placeholder="0" min="0" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Ghi chú</label>
+                        <input type="text" id="note" placeholder="Thông tin bổ sung (tùy chọn)">
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn-add" id="submitBtn">✓ Thêm Tài Khoản</button>
+                    <button type="button" class="btn-clear" onclick="cancelEdit()">✕ Hủy</button>
+                    <button type="button" class="btn-clear" onclick="exportData()" style="background: #16a085;">💾 Xuất dữ liệu</button>
+                    <button type="button" class="btn-clear" onclick="document.getElementById('importFile').click()" style="background: #e67e22;">📂 Nhập dữ liệu</button>
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table id="accountTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">STT</th>
+                        <th>Dịch vụ</th>
+                        <th>Ngày tạo</th>
+                        <th>Ngày hết hạn</th>
+                        <th style="width: 120px;">Còn lại</th>
+                        <th>Tài khoản</th>
+                        <th>User</th>
+                        <th>Tên người dùng</th>
+                        <th style="width: 120px;">Số tiền</th>
+                        <th>Ghi chú</th>
+                        <th style="width: 120px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="11" class="empty-message">Chưa có dữ liệu. Vui lòng thêm thông tin tài khoản mới.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="changePasswordModal">
+        <div class="modal-content">
+            <h2>🔑 Đổi Mật Khẩu</h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Mật khẩu hiện tại *</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Mật khẩu mới *</label>
+                    <input type="password" id="newPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu mới *</label>
+                    <input type="password" id="confirmPassword" required minlength="6">
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-clear" onclick="closeChangePasswordModal()">Hủy</button>
+                    <button type="submit" class="btn-add">Đổi mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let accounts = [];
+        let editingIndex = -1;
+        let isLoggedIn = false;
+
+        // Khởi tạo dữ liệu credentials mặc định
+        function initCredentials() {
+            const savedCreds = localStorage.getItem('appCredentials');
+            if (!savedCreds) {
+                // Mật khẩu mặc định: admin123
+                const defaultCreds = {
+                    username: 'admin',
+                    password: btoa('admin123') // Base64 encode (bảo mật cơ bản)
+                };
+                localStorage.setItem('appCredentials', JSON.stringify(defaultCreds));
+            }
+        }
+
+        // Kiểm tra đăng nhập
+        function checkLogin() {
+            const sessionLogin = sessionStorage.getItem('isLoggedIn');
+            if (sessionLogin === 'true') {
+                showMainApp();
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        // Xử lý đăng nhập
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const savedCreds = JSON.parse(localStorage.getItem('appCredentials'));
+            
+            if (username === savedCreds.username && btoa(password) === savedCreds.password) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                document.getElementById('loginError').style.display = 'none';
+                showMainApp();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Hiển thị màn hình đăng nhập
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('mainApp').classList.remove('active');
+        }
+
+        // Hiển thị ứng dụng chính
+        function showMainApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').classList.add('active');
+            initSampleData();
+        }
+
+        // Đăng xuất
+        function logout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                sessionStorage.removeItem('isLoggedIn');
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                showLoginScreen();
+            }
+        }
+
+        // Mở modal đổi mật khẩu
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('active');
+        }
+
+        // Đóng modal đổi mật khẩu
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('active');
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        // Xử lý đổi mật khẩu
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const savedCreds = JSON.parse(localStorage.getItem('appCredentials'));
+            
+            // Kiểm tra mật khẩu hiện tại
+            if (btoa(currentPassword) !== savedCreds.password) {
+                alert('❌ Mật khẩu hiện tại không đúng!');
+                return;
+            }
+            
+            // Kiểm tra mật khẩu mới khớp nhau
+            if (newPassword !== confirmPassword) {
+                alert('❌ Mật khẩu mới và xác nhận không khớp!');
+                return;
+            }
+            
+            // Kiểm tra độ dài mật khẩu
+            if (newPassword.length < 6) {
+                alert('❌ Mật khẩu mới phải có ít nhất 6 ký tự!');
+                return;
+            }
+            
+            // Cập nhật mật khẩu mới
+            savedCreds.password = btoa(newPassword);
+            localStorage.setItem('appCredentials', JSON.stringify(savedCreds));
+            
+            alert('✓ Đổi mật khẩu thành công!');
+            closeChangePasswordModal();
+        });
+
+        // Khởi tạo dữ liệu mẫu
+        function initSampleData() {
+            const savedData = localStorage.getItem('accountsData');
+            if (savedData) {
+                try {
+                    accounts = JSON.parse(savedData);
+                    renderTable();
+                    return;
+                } catch (e) {
+                    console.error('Lỗi khi đọc dữ liệu đã lưu:', e);
+                }
+            }
+
+            accounts = [
+                {
+                    service: "Chat GPT",
+                    createDate: "10/01/2025",
+                    expireDate: "11/01/2025",
+                    account: "vietly.com@gmail.com",
+                    user: "bachuong1998@gmail.com",
+                    username: "Chương",
+                    amount: 200000,
+                    note: ""
+                },
+                {
+                    service: "Chat GPT",
+                    createDate: "30/09/2025",
+                    expireDate: "30/10/2025",
+                    account: "vietly.itech3s@gmail.com",
+                    user: "minhtranduc3105@gmail.com",
+                    username: "A Mạnh",
+                    amount: 150000,
+                    note: ""
+                },
+                {
+                    service: "Chat GPT",
+                    createDate: "30/09/2025",
+                    expireDate: "30/10/2025",
+                    account: "vietly.itech3s@gmail.com",
+                    user: "doanthangit2@gmail.com",
+                    username: "Thắng IT SSC",
+                    amount: 150000,
+                    note: ""
+                }
+            ];
+            saveData();
+            renderTable();
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('accountsData', JSON.stringify(accounts));
+            } catch (e) {
+                console.error('Lỗi khi lưu dữ liệu:', e);
+                alert('⚠️ Không thể lưu dữ liệu. Vui lòng kiểm tra dung lượng trình duyệt.');
+            }
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+        }
+
+        function formatDate(dateString) {
+            if (dateString.includes('/')) {
+                return dateString;
+            }
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        function parseDate(dateString) {
+            const [day, month, year] = dateString.split('/');
+            return new Date(year, month - 1, day);
+        }
+
+        function validateDate(dateString) {
+            const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+            if (!regex.test(dateString)) {
+                return false;
+            }
+            const [day, month, year] = dateString.split('/').map(Number);
+            const date = new Date(year, month - 1, day);
+            return date.getFullYear() === year && 
+                   date.getMonth() === month - 1 && 
+                   date.getDate() === day;
+        }
+
+        function calculateDaysRemaining(expireDate) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const expire = parseDate(expireDate);
+            expire.setHours(0, 0, 0, 0);
+            const diffTime = expire - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function formatDaysRemaining(days) {
+            let className = 'days-normal';
+            let text = '';
+            
+            if (days < 0) {
+                className = 'days-expired';
+                text = `Hết hạn ${Math.abs(days)} ngày`;
+            } else if (days === 0) {
+                className = 'days-warning';
+                text = 'Hết hạn hôm nay';
+            } else if (days < 10) {
+                className = 'days-warning';
+                text = `${days} ngày`;
+            } else {
+                text = `${days} ngày`;
+            }
+            
+            return `<span class="days-remaining ${className}">${text}</span>`;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            
+            if (accounts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" class="empty-message">Chưa có dữ liệu. Vui lòng thêm thông tin tài khoản mới.</td></tr>';
+                updateStats();
+                return;
+            }
+
+            tbody.innerHTML = accounts.map((acc, index) => {
+                const daysRemaining = calculateDaysRemaining(acc.expireDate);
+                return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${acc.service}</td>
+                    <td>${formatDate(acc.createDate)}</td>
+                    <td>${formatDate(acc.expireDate)}</td>
+                    <td>${formatDaysRemaining(daysRemaining)}</td>
+                    <td>${acc.account}</td>
+                    <td>${acc.user}</td>
+                    <td>${acc.username}</td>
+                    <td style="font-weight: bold; color: #27ae60;">${formatMoney(acc.amount)}</td>
+                    <td>${acc.note || ''}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-edit" onclick="editAccount(${index})">Sửa</button>
+                            <button class="btn-delete" onclick="deleteAccount(${index})">Xóa</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            }).join('');
+
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('totalAccounts').textContent = accounts.length;
+            const uniqueServices = new Set(accounts.map(acc => acc.service));
+            document.getElementById('totalServices').textContent = uniqueServices.size;
+            
+            const totalAmount = accounts.reduce((sum, acc) => sum + (acc.amount || 0), 0);
+            document.getElementById('totalAmount').textContent = formatMoney(totalAmount);
+        }
+
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const createDate = document.getElementById('createDate').value.trim();
+            const expireDate = document.getElementById('expireDate').value.trim();
+
+            if (!validateDate(createDate)) {
+                alert('❌ Ngày tạo không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 01/10/2025)');
+                return;
+            }
+            if (!validateDate(expireDate)) {
+                alert('❌ Ngày hết hạn không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 31/10/2025)');
+                return;
+            }
+
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+            const accountData = {
+                service: document.getElementById('service').value,
+                createDate: createDate,
+                expireDate: expireDate,
+                account: document.getElementById('account').value,
+                user: document.getElementById('user').value,
+                username: document.getElementById('username').value,
+                amount: parseInt(document.getElementById('amount').value) || 0,
+                note: document.getElementById('note').value
+            };
+
+            if (editIndex >= 0) {
+                accounts[editIndex] = accountData;
+                alert('✓ Đã cập nhật tài khoản thành công!');
+                editingIndex = -1;
+            } else {
+                accounts.push(accountData);
+                alert('✓ Đã thêm tài khoản thành công!');
+            }
+
+            saveData();
+            renderTable();
+            cancelEdit();
+        });
+
+        function editAccount(index) {
+            editingIndex = index;
+            const acc = accounts[index];
+            
+            document.getElementById('editIndex').value = index;
+            document.getElementById('service').value = acc.service;
+            document.getElementById('createDate').value = acc.createDate;
+            document.getElementById('expireDate').value = acc.expireDate;
+            document.getElementById('account').value = acc.account;
+            document.getElementById('user').value = acc.user;
+            document.getElementById('username').value = acc.username;
+            document.getElementById('amount').value = acc.amount || 0;
+            document.getElementById('note').value = acc.note;
+
+            document.getElementById('formTitle').textContent = '✏️ Chỉnh Sửa Thông Tin';
+            document.getElementById('submitBtn').textContent = '✓ Cập Nhật';
+            document.getElementById('submitBtn').className = 'btn-add';
+            
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function cancelEdit() {
+            editingIndex = -1;
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('accountForm').reset();
+            document.getElementById('formTitle').textContent = '➕ Thêm Thông Tin Mới';
+            document.getElementById('submitBtn').textContent = '✓ Thêm Tài Khoản';
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
+        }
+
+        function clearForm() {
+            cancelEdit();
+        }
+
+        function deleteAccount(index) {
+            if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+                accounts.splice(index, 1);
+                saveData();
+                renderTable();
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(accounts, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            link.download = `tai-khoan-backup-${dd}-${mm}-${yyyy}.json`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✓ Đã xuất dữ liệu thành công!');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        if (confirm('Bạn có muốn thay thế dữ liệu hiện tại bằng dữ liệu từ file?\n\n- Chọn OK: Thay thế hoàn toàn\n- Chọn Cancel: Giữ lại và không thay đổi')) {
+                            accounts = importedData;
+                            saveData();
+                            renderTable();
+                            alert('✓ Đã nhập dữ liệu thành công!');
+                        }
+                    } else {
+                        alert('❌ File không đúng định dạng!');
+                    }
+                } catch (error) {
+                    alert('❌ Lỗi khi đọc file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        window.onload = function() {
+            initCredentials();
+            checkLogin();
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
+        };
+    </script>
+</body>
+</html>
