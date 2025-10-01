@@ -822,3 +822,208 @@
 
             let html = '';
             let stt = 1;
+
+            Object.keys(grouped).forEach(accountEmail => {
+                const accountGroup = grouped[accountEmail];
+                const groupCount = accountGroup.length;
+                
+                // Header cho nhóm
+                html += `
+                    <tr class="group-header">
+                        <td colspan="11">
+                            📧 Tài khoản: <strong>${accountEmail}</strong>
+                            <span class="account-badge">${groupCount} người dùng</span>
+                        </td>
+                    </tr>
+                `;
+
+                // Các dòng trong nhóm
+                accountGroup.forEach(acc => {
+                    const daysRemaining = calculateDaysRemaining(acc.expireDate);
+                    html += `
+                    <tr class="group-row">
+                        <td>${stt++}</td>
+                        <td>${acc.service}</td>
+                        <td>${formatDate(acc.createDate)}</td>
+                        <td>${formatDate(acc.expireDate)}</td>
+                        <td>${formatDaysRemaining(daysRemaining)}</td>
+                        <td>${acc.user}</td>
+                        <td>${acc.username}</td>
+                        <td>${acc.phone || '-'}</td>
+                        <td style="font-weight: bold; color: #27ae60;">${formatMoney(acc.amount)}</td>
+                        <td>${acc.note || ''}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-edit" onclick="editAccount(${acc.originalIndex})">Sửa</button>
+                                <button class="btn-delete" onclick="deleteAccount(${acc.originalIndex})">Xóa</button>
+                            </div>
+                        </td>
+                    </tr>
+                    `;
+                });
+            });
+
+            tbody.innerHTML = html;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('totalAccounts').textContent = accounts.length;
+            const uniqueServices = new Set(accounts.map(acc => acc.service));
+            document.getElementById('totalServices').textContent = uniqueServices.size;
+            
+            const totalAmount = accounts.reduce((sum, acc) => sum + (acc.amount || 0), 0);
+            document.getElementById('totalAmount').textContent = formatMoney(totalAmount);
+        }
+
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const createDate = document.getElementById('createDate').value.trim();
+            const expireDate = document.getElementById('expireDate').value.trim();
+
+            if (!validateDate(createDate)) {
+                alert('❌ Ngày tạo không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 01/10/2025)');
+                return;
+            }
+            if (!validateDate(expireDate)) {
+                alert('❌ Ngày hết hạn không đúng định dạng! Vui lòng nhập theo định dạng dd/mm/yyyy (ví dụ: 31/10/2025)');
+                return;
+            }
+
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+            const accountData = {
+                service: document.getElementById('service').value,
+                createDate: createDate,
+                expireDate: expireDate,
+                account: document.getElementById('account').value,
+                user: document.getElementById('user').value,
+                username: document.getElementById('username').value,
+                phone: document.getElementById('phone').value,
+                amount: parseInt(document.getElementById('amount').value) || 0,
+                note: document.getElementById('note').value
+            };
+
+            if (editIndex >= 0) {
+                accounts[editIndex] = accountData;
+                alert('✓ Đã cập nhật tài khoản thành công!');
+                editingIndex = -1;
+            } else {
+                accounts.push(accountData);
+                alert('✓ Đã thêm tài khoản thành công!');
+            }
+
+            saveData();
+            renderTable();
+            cancelEdit();
+        });
+
+        function editAccount(index) {
+            editingIndex = index;
+            const acc = accounts[index];
+            
+            document.getElementById('editIndex').value = index;
+            document.getElementById('service').value = acc.service;
+            document.getElementById('createDate').value = acc.createDate;
+            document.getElementById('expireDate').value = acc.expireDate;
+            document.getElementById('account').value = acc.account;
+            document.getElementById('user').value = acc.user;
+            document.getElementById('username').value = acc.username;
+            document.getElementById('phone').value = acc.phone || '';
+            document.getElementById('amount').value = acc.amount || 0;
+            document.getElementById('note').value = acc.note;
+
+            document.getElementById('formTitle').textContent = '✏️ Chỉnh Sửa Thông Tin';
+            document.getElementById('submitBtn').textContent = '✓ Cập Nhật';
+            document.getElementById('submitBtn').className = 'btn-add';
+            
+            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function cancelEdit() {
+            editingIndex = -1;
+            document.getElementById('editIndex').value = '-1';
+            document.getElementById('accountForm').reset();
+            document.getElementById('formTitle').textContent = '➕ Thêm Thông Tin Mới';
+            document.getElementById('submitBtn').textContent = '✓ Thêm Tài Khoản';
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
+        }
+
+        function clearForm() {
+            cancelEdit();
+        }
+
+        function deleteAccount(index) {
+            if (confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
+                accounts.splice(index, 1);
+                saveData();
+                renderTable();
+            }
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(accounts, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            link.download = `tai-khoan-backup-${dd}-${mm}-${yyyy}.json`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('✓ Đã xuất dữ liệu thành công!');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        if (confirm('Bạn có muốn thay thế dữ liệu hiện tại bằng dữ liệu từ file?\n\n- Chọn OK: Thay thế hoàn toàn\n- Chọn Cancel: Giữ lại và không thay đổi')) {
+                            accounts = importedData;
+                            saveData();
+                            renderTable();
+                            alert('✓ Đã nhập dữ liệu thành công!');
+                        }
+                    } else {
+                        alert('❌ File không đúng định dạng!');
+                    }
+                } catch (error) {
+                    alert('❌ Lỗi khi đọc file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            
+            event.target.value = '';
+        }
+
+        window.onload = function() {
+            initCredentials();
+            checkLogin();
+            
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yyyy = today.getFullYear();
+            document.getElementById('createDate').value = `${dd}/${mm}/${yyyy}`;
+        };
+    </script>
+</body>
+</html>
